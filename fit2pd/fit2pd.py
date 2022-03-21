@@ -1,11 +1,19 @@
 import pandas as pd
 import fitparse
+import gzip
 
-def fit2pd(fname):
+def fit2pd(fname, compression=None):
+    if compression is not None:
+        msg = 'currently only gzip compression is supported'
+        assert compression in ['gzip'], msg
     cols = []
     rows = []
     
-    fitfile = fitparse.FitFile(fname)
+    if compression == 'gzip':
+        f = gzip.open(fname,'rb')
+        fitfile = fitparse.FitFile(f)
+    else:
+        fitfile = fitparse.FitFile(fname)
     # Load the FIT file
     for record in fitfile.get_messages("record"):
         # Records can contain multiple pieces of data (ex: timestamp, latitude, longitude, etc)
